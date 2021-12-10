@@ -1,38 +1,148 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1">
-      <a ngbNavLink>One</a>
-      <ng-template ngbNavContent>
-        <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth
-          master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro
-          keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat
-          salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
-      </ng-template>
-    </li>
-    <li [ngbNavItem]="2">
-      <a ngbNavLink>Two</a>
-      <ng-template ngbNavContent>
-        <p>Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko
-          farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts
-          ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar
-          helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson
-          8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester
-          stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
-      </ng-template>
-    </li>
-    <li [ngbNavItem]="3">
-      <a ngbNavLink>Three</a>
-      <ng-template ngbNavContent>
-        <p>Sed commodo, leo at suscipit dictum, quam est porttitor sapien, eget sodales nibh elit id diam. Nulla facilisi.
-          Donec egestas ligula vitae odio interdum aliquet. Duis lectus turpis, luctus eget tincidunt eu, congue et odio.
-          Duis pharetra et nisl at faucibus. Quisque luctus pulvinar arcu, et molestie lectus ultrices et. Sed diam urna,
-          egestas ut ipsum vel, volutpat volutpat neque. Praesent fringilla tortor arcu. Vivamus faucibus nisl enim, nec
-          tristique ipsum euismod facilisis. Morbi ut bibendum est, eu tincidunt odio. Orci varius natoque penatibus et
-          magnis dis parturient montes, nascetur ridiculus mus. Mauris aliquet odio ac lorem aliquet ultricies in eget
-          neque. Phasellus nec tortor vel tellus pulvinar feugiat.</p>
-      </ng-template>
-    </li>
-  </ul>
-  
-  <div [ngbNavOutlet]="nav" class="mt-2"></div>
-  
-  <pre>Active: {{ active }}</pre>
+<ngx-spinner></ngx-spinner>
+<div class="pos-f-t">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarTogglerDemo03"
+      aria-controls="navbarTogglerDemo03"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Phone Book</a>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="./about.html"
+            >Home <span class="sr-only">(current)</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+      </ul>
+      <button
+        class="btn btn-info"
+        (click)="createNewPhoneNumber(CreateNewPhoneNumberModal)"
+      >
+        <i class="fa fa-plus" aria-hidden="true"></i>Create Contact
+      </button>
+    </div>
+  </nav>
+</div>
+
+<div style="text-align: center;" *ngIf="contact.length==0">
+  <img src="../../assets/no_data_found.jpg" alt="">
+  <p style="font-weight: bold;font-size: 40px;">No Data Found</p>
+</div>
+<div *ngIf="contact.length>0"> 
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col text-bold">#</th>
+        <th scope="col">Contact Name</th>
+        <th scope="col">Contact Email</th>
+        <th scope="col">Contact Number</th>
+        <th scope="col">Status</th>
+        <th scope="col">Created Date</th>
+        <th scope="col">Updated Date</th>
+        <th scope="col" style="text-align: center;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let phoneNum of contact; let i = index">
+        <th scope="row">{{ i + 1 }}</th>
+        <td>{{ phoneNum.contactName }}</td>
+        <td>{{ phoneNum.contactEmail }}</td>
+        <td>{{ phoneNum.contactNumber }}</td>
+        <td *ngIf="phoneNum.isActive == true">Active</td>
+        <td *ngIf="phoneNum.isActive != true">Disable</td>
+        <td>{{ phoneNum.createdDate }}</td>
+        <td>{{ phoneNum.updatedDate }}</td>
+        <td><button class="btn btn-success" style="margin-right: 10px;" (click)="updateContact(CreateNewPhoneNumberModal,phoneNum.contactId)" >Update</button> <button class="btn btn-secondary" (click)="deleteContact(phoneNum.contactId)">Delete</button></td>
+        
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- new phone number modal starts here -->
+<ng-template #CreateNewPhoneNumberModal let-modal>
+  <div>
+    <div class="modal-header">
+      <h4 class="modal-title">{{ modalHeader }}</h4>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div
+      class="modal-body c-scrollbar"
+      [ngClass]="{
+        small_size_modal: modalSize == 's',
+        medium_size_modal: modalSize == 'm',
+        large_size_modal: modalSize == 'l'
+      }"
+      style="height: 350px !important ; padding: 1rem; overflow-x: hidden"
+    >
+      <div style="padding: 20px;">
+        <div class="row" style="padding: 10px;">
+          <label>Name :</label>
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Enter Name"
+            [(ngModel)]="createContact.contactName"
+          />
+        </div>
+        <div class="row" style="padding: 10px;">
+          <label>Email :</label>
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Enter Email"
+            [(ngModel)]="createContact.contactEmail"
+          />
+        </div>
+        <div class="row" style="padding: 10px;">
+          <label>Phone Number :</label>
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Enter Phone Number"
+            [(ngModel)]="createContact.contactNumber"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-light"
+        (click)="modal.close('Close click')"
+      >
+        Close
+      </button>
+      <button
+        type="button"
+        class="btn btn-info"
+        (click)="saveContact()"
+      >
+        {{buttonType}}
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- new phone number modal ends here -->
